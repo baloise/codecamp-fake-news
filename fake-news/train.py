@@ -8,7 +8,6 @@ from sklearn.metrics import classification_report
 import transformers
 from transformers import AutoModel, BertTokenizerFast
 from sklearn.decomposition import PCA
-#import tensorflow as tf
 import tensorflow_hub as hub
 from pycaret.classification import * 
 from sklearn.preprocessing import LabelEncoder
@@ -21,17 +20,28 @@ from transformers import AdamW
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import confusion_matrix
 
+########## READ/PREPARE DATA ##########
+
+# Read the real data csv into a pandas dataframe, limit to 500 rows for basic testing
 true_data = pd.read_csv('True.csv', nrows=500)
+# Remove the columns of the real data that we do not need. We base our predictions on the title of the article.
 true_data = true_data.drop(columns=['text', 'tags', 'source', 'author', 'published'])
+# Add a new column "label" that always has the value "0" (which stands for real news) in this dataframe
 true_data['label']=[0]*len(true_data)
 
+# Read the fake data csv into a pandas dataframe, limit to 500 rows for basic testing
 fake_data = pd.read_csv('Fake.csv', nrows=500)
+# Remove the columns of the fake data that we do not need. We base our predictions on the title of the article.
 fake_data = fake_data.drop(columns=['id', 'url', 'Body', 'Kategorie', 'Datum', 'Quelle', 'Fake', 'Art'])
+# Rename the column "Titel" to "title" to match with the real data
 fake_data = fake_data.rename(columns={"Titel": "title"})
+# Add a new column "label" that always has the value "1" (which stands for fake news) in this dataframe
 fake_data['label']=[1]*len(fake_data)
 
+# Combine the two dataframes (fake news / real news) into one new dataframe
 data=true_data.append(fake_data).sample(frac=1)
 
+# Optional code to see the dataframes content
 #print("TRUE: ")
 #print(true_data.head())
 #print("FAKE: ")
@@ -40,16 +50,25 @@ data=true_data.append(fake_data).sample(frac=1)
 #print(len(data))
 #print(data.head())
 
+# Optional code to see the share of fake/real news
 # cat_tar=pd.get_dummies(data.label)[1]
 # label_size = [cat_tar.sum(),len(cat_tar)-cat_tar.sum()]
 # plt.pie(label_size,explode=[0.1,0.1],colors=['firebrick','navy'],startangle=90,shadow=True,labels=[0,1],autopct='%1.1f%%')
 # plt.show()
 
+
+########## PREPARE TRAINING DATA ##########
+
+# Split the data into test and training data
+# The column "title" contains our "input" the column "label" our "output" 
+# We use 70% of data for training and 30% for testing
 train_text, temp_text, train_labels, temp_labels = train_test_split(data['title'], data['label'], 
                                                                     random_state=2018, 
                                                                     test_size=0.3, 
                                                                     stratify=data['label'])
 
+# Split the test data again
+# TODO: why? 
 val_text, test_text, val_labels, test_labels = train_test_split(temp_text, temp_labels, 
                                                                 random_state=2018, 
                                                                 test_size=0.5, 
