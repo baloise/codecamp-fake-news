@@ -19,18 +19,19 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler, Sequentia
 from transformers import AdamW
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import confusion_matrix
+from bert_arch import BERT_Arch
 
 ########## READ/PREPARE DATA ##########
 
 # Read the real data csv into a pandas dataframe, limit to 500 rows for basic testing
-true_data = pd.read_csv('True.csv', nrows=500)
+true_data = pd.read_csv('True.csv', nrows=1000)
 # Remove the columns of the real data that we do not need. We base our predictions on the title of the article.
 true_data = true_data.drop(columns=['text', 'tags', 'source', 'author', 'published'])
 # Add a new column "label" that always has the value "0" (which stands for real news) in this dataframe
 true_data['label']=[0]*len(true_data)
 
 # Read the fake data csv into a pandas dataframe, limit to 500 rows for basic testing
-fake_data = pd.read_csv('Fake.csv', nrows=500)
+fake_data = pd.read_csv('Fake.csv', nrows=1000)
 # Remove the columns of the fake data that we do not need. We base our predictions on the title of the article.
 fake_data = fake_data.drop(columns=['id', 'url', 'Body', 'Kategorie', 'Datum', 'Quelle', 'Fake', 'Art'])
 # Rename the column "Titel" to "title" to match with the real data
@@ -62,29 +63,61 @@ data=true_data.append(fake_data).sample(frac=1)
 # Split the data into test and training data
 # The column "title" contains our "input" the column "label" our "output" 
 # We use 70% of data for training and 30% for testing
+# Input:
+# - Column title of the dataset
+# - Column label of the dataset
+# - random_state: Ensures that shuffling in split is reproducible
+# - test_size: Optional (Default 25%); Proportion (30%) of the dataset that is used for testing; in our case 70% for training
+# - stratify: Ensures that the real/fake news proportion in the training set is the same as in the testing set. That's why we use the label column as it defines real/fake news.
+# Output: 
+# - train_text: 70% of the column title data
+# - temp_text: 30% of the column title data
+# - train_labels: 70% of the column label data
+# - temp_labels: 30% of the column label data
 train_text, temp_text, train_labels, temp_labels = train_test_split(data['title'], data['label'], 
                                                                     random_state=2018, 
                                                                     test_size=0.3, 
                                                                     stratify=data['label'])
 
-# Split the test data again
-# TODO: why? 
+# Same behaviour as above but with a 50% split
+# Output:
+# - val_text: 15% of the column title data
+# - test_text: 15% of the column title data
+# - val_labels: 15% of the column label data
+# - test_labels: 15% of the column label data
 val_text, test_text, val_labels, test_labels = train_test_split(temp_text, temp_labels, 
                                                                 random_state=2018, 
                                                                 test_size=0.5, 
                                                                 stratify=temp_labels)
 
-bert = AutoModel.from_pretrained('distilbert-base-german-cased')
-tokenizer = BertTokenizerFast.from_pretrained('distilbert-base-german-cased')
 
-seq_len = [len(i.split()) for i in train_text]
+########## ANALYZE DISTRIBUTION AND SET MAX LENGTH ##########
 
+# Optional: Visualize the word count distribution among the training titles
+# seq_len = [len(i.split()) for i in train_text]
 # pd.Series(seq_len).hist(bins = 40,color='firebrick')
 # plt.xlabel('Number of Words')
 # plt.ylabel('Number of texts')
 # plt.show()
 
-MAX_LENGHT = 11 # maybe increase to 15 (see plot above)
+# Set the max length of the titles to cut extremely long records 
+MAX_LENGHT = 11
+
+
+########## TOKENIZE ##########
+
+# Use a pre-trained BERT model
+# BERT was developed by Google and is able to detect language patterns.
+# Orginally developed to detected masked words in sentences and make next sentence predictions
+# https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwi3mf-Kx_7zAhWMOuwKHcBrDy8QFnoECAwQAQ&url=https%3A%2F%2Ftowardsdatascience.com%2Fbert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270&usg=AOvVaw3i0maaLfw6E-LA5MR__GV3
+# Can be finetuned fast for specific language related use cases 
+bert = AutoModel.from_pretrained('bert-base-uncased')
+# Tokenizer is in charge of preparing the inputs for a model
+# It will convert a word-string to a numerical value
+tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
+
+# Uses the tokenizer to convert all training texts to numerical value arrays
+# Will cut the title to MAX_LENGTH
 tokens_train = tokenizer.batch_encode_plus(
     train_text.tolist(),
     max_length = MAX_LENGHT,
@@ -92,7 +125,8 @@ tokens_train = tokenizer.batch_encode_plus(
     truncation=True
 )
 
-# tokenize and encode sequences in the validation set
+# Uses the tokenizer to convert all val? texts to numerical value arrays
+# Will cut the title to MAX_LENGTH
 tokens_val = tokenizer.batch_encode_plus(
     val_text.tolist(),
     max_length = MAX_LENGHT,
@@ -100,7 +134,8 @@ tokens_val = tokenizer.batch_encode_plus(
     truncation=True
 )
 
-# tokenize and encode sequences in the test set
+# Uses the tokenizer to convert all testing texts to numerical value arrays
+# Will cut the title to MAX_LENGTH
 tokens_test = tokenizer.batch_encode_plus(
     test_text.tolist(),
     max_length = MAX_LENGHT,
@@ -108,7 +143,13 @@ tokens_test = tokenizer.batch_encode_plus(
     truncation=True
 )
 
-## convert lists to tensors
+# Output
+# {'input_ids': [[1, 2, 3], [4, 5, 6]], 'token_type_ids': [[0, 0,0 ], [0, 0, 0]], 'attention_mask': [[1, 1, 1], [1, 1, 1]]}
+
+
+########## TENSORS ##########
+# A torch.Tensor is a multi-dimensional matrix containing elements of a single data type.
+# convert lists to tensors
 
 train_seq = torch.tensor(tokens_train['input_ids'])
 train_mask = torch.tensor(tokens_train['attention_mask'])
@@ -122,112 +163,79 @@ test_seq = torch.tensor(tokens_test['input_ids'])
 test_mask = torch.tensor(tokens_test['attention_mask'])
 test_y = torch.tensor(test_labels.tolist())
 
-#define a batch size
-batch_size = 32
-
-# wrap tensors
+# A TensorDataset is a dataset of tensors.
+# Stores a single tensor internally, which is then indexed inside get().
 train_data = TensorDataset(train_seq, train_mask, train_y)
-
-# sampler for sampling the data during training
-train_sampler = RandomSampler(train_data)
-
-# dataLoader for train set
-train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
-
-# wrap tensors
 val_data = TensorDataset(val_seq, val_mask, val_y)
 
-# sampler for sampling the data during training
+########## TRAINING ##########
+
+# Batch size for training
+batch_size = 32
+
+# Samplers for Datasets
+# RandomSampler: Samples elements randomly.
+# SequentialSampler: Samples elements sequentially, always in the same order.
+train_sampler = RandomSampler(train_data)
 val_sampler = SequentialSampler(val_data)
 
-# dataLoader for validation set
+# Dataloader for training set
+train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
+
+# Dataloader for validation set
 val_dataloader = DataLoader(val_data, sampler = val_sampler, batch_size=batch_size)
 for param in bert.parameters():
     param.requires_grad = False
 
-class BERT_Arch(nn.Module):
-
-    def __init__(self, bert):
-
-        super(BERT_Arch, self).__init__()
-
-        self.bert = bert
-
-        # dropout layer
-        self.dropout = nn.Dropout(0.1)
-
-        # relu activation function
-        self.relu =  nn.ReLU()
-
-        # dense layer 1
-        self.fc1 = nn.Linear(768,512)
-
-        # dense layer 2 (Output layer)
-        self.fc2 = nn.Linear(512,2)
-
-        #softmax activation function
-        self.softmax = nn.LogSoftmax(dim=1)
-
-    #define the forward pass
-    def forward(self, sent_id, mask):
-
-        #pass the inputs to the model
-        cls_hs = self.bert(sent_id, attention_mask=mask)['pooler_output']
-        x = self.fc1(cls_hs)
-
-        x = self.relu(x)
-
-        x = self.dropout(x)
-
-        # output layer
-        x = self.fc2(x)
-
-        # apply softmax activation
-        x = self.softmax(x)
-
-        return x
-
+# Instance of our model
 model = BERT_Arch(bert)
 
-# define the optimizer
+# Optimizer
+# Implements AdamW algorithm.
 optimizer = AdamW(model.parameters(), lr = 1e-5) # learning rate
 
-#compute the class weights
+# Compute the class weights
+# Proportion of fake and real news data
 class_weights = compute_class_weight('balanced', np.unique(train_labels), train_labels)
+print("Class Weights: ",class_weights)
 
-print("Class Weights:",class_weights)
+# Tensor for class weights
+weights = torch.tensor(class_weights, dtype=torch.float)
 
-weights= torch.tensor(class_weights,dtype=torch.float)
-
-# define the loss function
+# Define the loss function
+# A loss function maps decisions to their associated costs to 
+# minimize the error for each training example during the learning process.
 cross_entropy  = nn.NLLLoss(weight=weights) 
 
-# number of training epochs
+# Number of training epochs
 epochs = 10
+
+
+########## TRAINING / EVALUATE FUNCTIONS ##########
 
 def train():
 
     model.train()
 
-    total_loss, total_accuracy = 0, 0
+    total_loss = 0
 
     # empty list to save model predictions
     total_preds=[]
 
     # iterate over batches
-    for step,batch in enumerate(train_dataloader):
+    for step, batch in enumerate(train_dataloader):
 
-        # progress update after every 50 batches.
+        # progress update after every 10 batches.
         if step % 10 == 0 and not step == 0:
             print('  Batch {:>5,}  of  {:>5,}.'.format(step, len(train_dataloader)))
 
         # push the batch to gpu
         batch = [r for r in batch]
         sent_id, mask, labels = batch
-        #print(type(labels),type(mask),type(sent_id))
-        #print(sent_id)
+
         # clear previously calculated gradients
         model.zero_grad()
+
         # get model predictions for the current batch
         preds = model(sent_id, mask)
 
@@ -269,7 +277,7 @@ def evaluate():
     # deactivate dropout layers
     model.eval()
 
-    total_loss, total_accuracy = 0, 0
+    total_loss = 0
 
     # empty list to save the model predictions
     total_preds = []
@@ -356,4 +364,4 @@ print(classification_report(test_y, preds))
 
 from sklearn.metrics import confusion_matrix
 
-confusion_matrix(preds,test_y)
+print(confusion_matrix(preds,test_labels))
