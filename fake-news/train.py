@@ -21,11 +21,11 @@ from transformers import AdamW
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import confusion_matrix
 
-true_data = pd.read_csv('True.csv', nrows=1000)
+true_data = pd.read_csv('True.csv', nrows=500)
 true_data = true_data.drop(columns=['text', 'tags', 'source', 'author', 'published'])
 true_data['label']=[0]*len(true_data)
 
-fake_data = pd.read_csv('Fake.csv', nrows=1000)
+fake_data = pd.read_csv('Fake.csv', nrows=500)
 fake_data = fake_data.drop(columns=['id', 'url', 'Body', 'Kategorie', 'Datum', 'Quelle', 'Fake', 'Art'])
 fake_data = fake_data.rename(columns={"Titel": "title"})
 fake_data['label']=[1]*len(fake_data)
@@ -55,8 +55,8 @@ val_text, test_text, val_labels, test_labels = train_test_split(temp_text, temp_
                                                                 test_size=0.5, 
                                                                 stratify=temp_labels)
 
-bert = AutoModel.from_pretrained('bert-base-uncased')
-tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
+bert = AutoModel.from_pretrained('distilbert-base-german-cased')
+tokenizer = BertTokenizerFast.from_pretrained('distilbert-base-german-cased')
 
 seq_len = [len(i.split()) for i in train_text]
 
@@ -65,7 +65,7 @@ seq_len = [len(i.split()) for i in train_text]
 # plt.ylabel('Number of texts')
 # plt.show()
 
-MAX_LENGHT = 13 # maybe increase to 15 (see plot above)
+MAX_LENGHT = 11 # maybe increase to 15 (see plot above)
 tokens_train = tokenizer.batch_encode_plus(
     train_text.tolist(),
     max_length = MAX_LENGHT,

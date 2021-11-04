@@ -60,7 +60,7 @@ class BERT_Arch(nn.Module):
         return x
 
 # PREDICT
-path = "saved_weights.pt"
+path = "awesome-model.pt"
 
 bert = AutoModel.from_pretrained('bert-base-uncased')
 model = BERT_Arch(bert)
@@ -68,17 +68,18 @@ model = BERT_Arch(bert)
 model.load_state_dict(torch.load(path))
 model.eval()
 
-fake = ["Donald Trump Sends Out Embarrassing New Year’s Eve Message"] # True: 7%, Fake: 92%
-mix = ["Donald Trump Sends Out Embarrassing U.S. budget"] # True: 47%, Fake: 52%
-breitbart = ["Analysis: Biden Proposal Could Turn Illegal Alien Families into Millionaires"] # True: 67%, Fake: 32%
-true = ["As U.S. budget fight looms, Republicans flip their fiscal script"] # True: 88%, Fake: 11%
+fake = ["Querdenker holt sich Booster-Telegram-Gruppe, um Immunität gegen Fakten aufzufrischen"]
+true = ["Die letzten Stunden des NSU – und was bis heute ungeklärt ist"]
 tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
 tokens_test = tokenizer.batch_encode_plus(
     true,
-    max_length = 15,
+    max_length = 11,
     pad_to_max_length=True,
     truncation=True
 )
+
+print(tokens_test)
+quit()
 
 test_seq = torch.tensor(tokens_test['input_ids'])
 test_mask = torch.tensor(tokens_test['attention_mask'])
@@ -101,6 +102,7 @@ with torch.no_grad():
     y = nn.functional.softmax(preds, dim=-1)
     print(y)
     z = y.detach().cpu().numpy()
-    print(z[0][0])
+    print("Probability True: " + str(z[0][0]))
+    print("Probability False: " + str(z[0][1]))
     #print(classification_report(test_y, preds))
 
