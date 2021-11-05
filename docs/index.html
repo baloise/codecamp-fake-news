@@ -18,13 +18,13 @@
 			<div class="slides">
 				<section>
 					<section>
-						<h1>Machine Learning</h1>
+						<h1>Machine Learning<hr>cURL</h1>
 						Codecamp 2021
 					</section>
 					<section>
 						<h2>Team</h2>
 						<ul>
-							<li>(Daniela -> eigene Slides oder hier?)</li>
+							<li>Daniela</li>
 							<li>Marco</li>
 							<li>Yannick</li>
 						</ul>
@@ -61,7 +61,7 @@
 						<h2>Prepare data</h2>
 						<img src="img/prepare-data.png">
 						<ul>
-							<li>CSVs into <strong>Pandas</strong> dataframes</li>
+							<li>CSVs into <strong>pandas</strong> dataframes</li>
 							<li>Adjust columns</li>
 						</ul>
 					</section>
@@ -80,8 +80,45 @@
 							<img src="img/word-distribution.png" style="max-height: 350px">
 						</div>
 						<ul>
-							<li>Cut to 15 </li>
+							<li>Plot word distribution using <strong>matplotlib</strong></li>
+							<li>Cut to 15 words</li>
 						</ul>
+						<aside class="notes">
+							Shhh, these are your private notes 📝
+						  </aside>
+					</section>
+					<section>
+						<h2>Tokenize</h2>
+						<div>
+							<img src="img/tokenize.png" style="max-height: 350px">
+						</div>
+						<ul>
+							<li>BERTTokenizer from <strong>transformers</strong></li>
+							<li>Convert words to numeric values</li>
+							<li>Convert numeric matrices to Tensors with <strong>pytorch</strong></li>
+						</ul>
+					</section>
+					<section>
+						<h2>Training</h2>
+						<div>
+							<img src="img/training.png" style="max-height: 350px">
+						</div>
+						<ul>
+							<li>Train and store the model (<strong>pytorch</strong>, <strong>scikit-learn</strong>)</li>
+							<li>Result: Model as <strong>.pt</strong> file</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Inference</h2>
+						<div>
+							<img src="img/inference.png" style="max-height: 350px">
+						</div>
+						<pre><code class="language-python" data-trim data-noescape data-line-numbers>
+							Result: 
+							[0.8635212, 0.1364788]
+							# Probability real news: 86.4 %
+							# Probability fake news: 13.6 %
+						</code></pre>
 					</section>
 				</section>
 				<section>
@@ -93,6 +130,7 @@
 						<ul>
 							<li>Training an English model is easier than German</li>
 							<li>Fake news detection is checking wording, not content</li>
+							<li>Getting good data is hard</li>
 							<li>Understanding Machine Learning in 5 days is difficult :)</li>
 						</ul>
 					</section>
