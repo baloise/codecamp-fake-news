@@ -1,87 +1,104 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>Codecamp Machine Learning</title>
+    <title>Codecamp Machine Learning</title>
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/black.css">
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>
-					<section>
-						<h1>Machine Learning<hr>cURL</h1>
-						Codecamp 2021
-					</section>
-					<section>
-						<h2>Team</h2>
-						<ul>
-							<li>Daniela</li>
-							<li>Marco</li>
-							<li>Yannick</li>
-						</ul>
-					</section>
-				</section>
-				<section>
-					<section><h1>Intro</h1></section>
-					<section>
-						<h2>Why?</h2>
-						<ul>
-							<li>Machine Learning</li>
-							<li>Interesting use case</li>
-						</ul>
-					</section>
-					<section>
-						<h2>Approach</h2>
-						<ul>
-							<li>Started with a Tutorial (English dataset)</li>
-							<li>Train own model with German data</li>
-							<li>Use the trained model</li>
-						</ul>
-					</section>
-				</section>
-				<section>
-					<h1>How does it work?</h1>
-				</section>
-				<section>
-					<section><h1>BERT</h1></section>
-					<section>todo</section>
-				</section>
-				<section>
-					<section><h1>Training process</h1></section>
-					<section>
-						<h2>Prepare data</h2>
-						<img src="img/prepare-data.png">
-						<ul>
-							<li>CSVs into <strong>pandas</strong> dataframes</li>
-							<li>Adjust columns</li>
-						</ul>
-					</section>
-					<section>
-						<h2>Split data</h2>
-						<div>
-							<img src="img/split-data.png" style="max-height: 350px">
-						</div>
-						<ul>
-							<li>Using <strong>scikit-learn</strong></li>
-						</ul>
-					</section>
-					<section>
-						<h2>Word Distribution</h2>
-						<div>
-							<img src="img/word-distribution.png" style="max-height: 350px">
-						</div>
-						<ul>
-							<li>Plot word distribution using <strong>matplotlib</strong></li>
-							<li>Cut to 15 words</li>
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/monokai.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <section>
+                <h1>Machine Learning<hr>cURL</h1>
+                Codecamp 2021
+            </section>
+            <section>
+                <h2>Team</h2>
+                <ul>
+                    <li>Daniela</li>
+                    <li>Marco</li>
+                    <li>Yannick</li>
+                </ul>
+            </section>
+        </section>
+        <section>
+            <section><h1>Intro</h1></section>
+            <section>
+                <h2>Why?</h2>
+                <ul>
+                    <li>Machine Learning</li>
+                    <li>Interesting use case</li>
+                </ul>
+                <aside class="notes">
+                    Wanted to do something with ML; Decided to do fake news detection use case
+                </aside>
+            </section>
+            <section>
+                <h2>Approach</h2>
+                <ul>
+                    <li>Started with a Tutorial (English dataset)</li>
+                    <li>Train own model with German data</li>
+                    <li>Use the trained model</li>
+                </ul>
+            </section>
+        </section>
+        <section>
+            <h1>How does it work?</h1>
+        </section>
+        <section>
+            <section>
+                <h1>BERT</h1>
+            </section>
+            <section>
+                <h2>Who the fuck is BERT?</h2>
+                <ul>
+                    <li>Pretrained ML Model</li>
+                    <li>Developed by Google</li>
+                    <li>Detects language patterns</li>
+                    <li>Can be fine tuned for specific tasks</li>
+                </ul>
+
+                <aside class="notes">
+                    Fine tune tasks examples: summarization of text, classification, sentiment analysis
+                    -> we use classification
+                </aside>
+            </section>
+        </section>
+        <section>
+            <section><h1>Training process</h1></section>
+            <section>
+                <h2>Prepare data</h2>
+                <img src="img/prepare-data.png">
+                <ul>
+                    <li>CSVs into <strong>pandas</strong> dataframes</li>
+                    <li>Adjust columns</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Split data</h2>
+                <div>
+                    <img src="img/split-data.png" style="max-height: 350px">
+                </div>
+                <ul>
+                    <li>Using <strong>scikit-learn</strong></li>
+                </ul>
+            </section>
+            <section>
+                <h2>Word Distribution</h2>
+                <div>
+                    <img src="img/word-distribution.png" style="max-height: 350px">
+                </div>
+                <ul><li>Plot word distribution using <strong>matplotlib</strong></li>
+                    <li>Cut to 15words</li>
 						</ul>
 						<aside class="notes">
 							Shhh, these are your private notes 📝
@@ -106,55 +123,59 @@
 						<ul>
 							<li>Train and store the model (<strong>pytorch</strong>, <strong>scikit-learn</strong>)</li>
 							<li>Result: Model as <strong>.pt</strong> file</li>
-						</ul>
-					</section>
+                </ul></section>
 					<section>
 						<h2>Inference</h2>
 						<div>
 							<img src="img/inference.png" style="max-height: 350px">
 						</div>
 						<pre><code class="language-python" data-trim data-noescape data-line-numbers>
-							Result: 
+							Result:
 							[0.8635212, 0.1364788]
 							# Probability real news: 86.4 %
 							# Probability fake news: 13.6 %
 						</code></pre>
-					</section>
-				</section>
-				<section>
-					<h1>Demo</h1>
-				</section>
-				<section>
-					<section><h1>Learnings</h1></section>
-					<section>
-						<ul>
-							<li>Training an English model is easier than German</li>
-							<li>Fake news detection is checking wording, not content</li>
-							<li>Getting good data is hard</li>
-							<li>Understanding Machine Learning in 5 days is difficult :)</li>
-						</ul>
-					</section>
-				</section>
-				<section>
-					<h1>Questions?</h1>
-				</section>
-			</div>
-		</div>
+            </section>
+        </section>
+        <section>
+            <h1>Demo</h1>
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+            <aside class="notes">
+                - Show basic training model run and report
+                - Show API Call -> Call API which is deployed
+                - Show Chrome Plugin on specific sites
+            </aside>
+        </section>
+        <section>
+            <section><h1>Learnings</h1></section>
+            <section>
+                <ul>
+                    <li>Training an English model is easier than German</li>
+                    <li>Fake news detection is checking wording, not content</li><li>Getting good data is hard</li>
+                    <li>Understanding Machine Learning in 5 days is difficult :)</li>
+                </ul>
+            </section>
+        </section>
+        <section>
+            <h1>Questions?</h1>
+        </section>
+    </div>
+</div>
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+<script src="dist/reveal.js"></script>
+<script src="plugin/notes/notes.js"></script>
+<script src="plugin/markdown/markdown.js"></script>
+<script src="plugin/highlight/highlight.js"></script>
+<script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+    });
+</script>
+</body>
 </html>
