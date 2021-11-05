@@ -23,38 +23,82 @@
 					</section>
 					<section>
 						<h2>Team</h2>
-					</section>
-				</section>
-				<section>
-					<section>
-						<h2>Goals</h2>
-					</section>
-					<section>
 						<ul>
-							<li>Get started with Machine Learning</li>
-							<li>Build a fake news detection</li>
+							<li>(Daniela -> eigene Slides oder hier?)</li>
+							<li>Marco</li>
+							<li>Yannick</li>
 						</ul>
 					</section>
 				</section>
 				<section>
+					<section><h1>Intro</h1></section>
 					<section>
-						<h2>How we started</h2>
+						<h2>Why?</h2>
+						<ul>
+							<li>Machine Learning</li>
+							<li>Interesting use case</li>
+						</ul>
 					</section>
 					<section>
+						<h2>Approach</h2>
 						<ul>
-							<li>Several tutorials about fake news detection online (we used <a href="https://towardsdatascience.com/fake-news-detection-with-machine-learning-using-python-3347d9899ad1">this one</a>)</li>
-							<li>We downloaded English training data and followed the guide</li>
+							<li>Started with a Tutorial (English dataset)</li>
+							<li>Train own model with German data</li>
+							<li>Use the trained model</li>
 						</ul>
 					</section>
 				</section>
 				<section>
-					<section><h2>Learnings</h2></section>
+					<h1>How does it work?</h1>
+				</section>
+				<section>
+					<section><h1>BERT</h1></section>
+					<section>todo</section>
+				</section>
+				<section>
+					<section><h1>Training process</h1></section>
 					<section>
+						<h2>Prepare data</h2>
+						<img src="img/prepare-data.png">
 						<ul>
-							<li>Training takes a while :)</li>
-							<li></li>
+							<li>CSVs into <strong>Pandas</strong> dataframes</li>
+							<li>Adjust columns</li>
 						</ul>
 					</section>
+					<section>
+						<h2>Split data</h2>
+						<div>
+							<img src="img/split-data.png" style="max-height: 350px">
+						</div>
+						<ul>
+							<li>Using <strong>scikit-learn</strong></li>
+						</ul>
+					</section>
+					<section>
+						<h2>Word Distribution</h2>
+						<div>
+							<img src="img/word-distribution.png" style="max-height: 350px">
+						</div>
+						<ul>
+							<li>Cut to 15 </li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<h1>Demo</h1>
+				</section>
+				<section>
+					<section><h1>Learnings</h1></section>
+					<section>
+						<ul>
+							<li>Training an English model is easier than German</li>
+							<li>Fake news detection is checking wording, not content</li>
+							<li>Understanding Machine Learning in 5 days is difficult :)</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<h1>Questions?</h1>
 				</section>
 			</div>
 		</div>
